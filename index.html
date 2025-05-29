@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motorradtabelle</title>
+    <style>
+        /* Allgemeine Tabellenstile für bessere Lesbarkeit und Struktur */
+        table {
+            /* width: 100%; */ /* Diese Zeile entfernen oder auskommentieren */
+            border-collapse: collapse; /* Entfernt den Abstand zwischen den Zellen */
+            font-family: Arial, sans-serif;
+            table-layout: auto; /* NEU: Der Browser passt die Spaltenbreite an den Inhalt an */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            white-space: nowrap; /* NEU: Verhindert Zeilenumbrüche in Zellen, damit die Breite besser passt */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer; /* Zeigt an, dass Spaltenüberschriften klickbar sind */
+        }
+
+        th:hover {
+            background-color: #e0e0e0; /* Visueller Hinweis beim Überfahren mit der Maus */
+        }
+
+        /* --- Hier ist der entscheidende Teil für das Bild --- */
+        td.image-cell {
+            padding: 6px;
+            height: 60px; /* Feste Höhe für die Bildzelle */
+            /* object-fit: scale-down; wurde hier entfernt, da es auf img angewendet wird */
+            overflow: hidden;
+            line-height: 0;
+            /* box-sizing: border-box; ist bei height für td wichtig, aber nicht direkt für Bildgröße */
+            /* Wenn die Zelle genau 60px hoch sein soll, hilft das `line-height: 0;` */
+        }
+
+        td.image-cell a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            /* object-fit: scale-down; wurde hier entfernt, da es auf img angewendet wird */
+            text-decoration: none;
+            color: inherit;
+        }
+
+        td.image-cell img {
+            display: block;
+            max-width: 100%; /* Bild nimmt max. die Breite der Zelle ein */
+            max-height: 90px; /* Maximale Höhe des Bildes, wenn du sie steuern möchtest */
+            height: auto; /* Behält das Seitenverhältnis bei */
+            object-fit: scale-down; /* Passt das Bild an die Zellengröße an, ohne es zu beschneiden */
+            margin: 0 auto;
+            border: none;
+            padding: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <table>
+        <thead>
+            <tr>
+                <th data-column-type="text">Hersteller</th>
+                <th data-column-type="text">Modell</th>
+                <th>Bild (klick zum vergrößern)</th>
+                <th data-column-type="number">Hubraum (ccm)</th>
+                <th data-column-type="number">Leistung (PS)</th>
+                <th data-column-type="number">Baujahr</th>
+                <th data-column-type="number">Leergewicht (kg)</th>
+                <th data-column-type="number">Zylinder</th>
+                <th data-column-type="currency">Preis</th>
+                <th data-column-type="text">Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Aprilia</td>
+                <td>Shiver 900</td>
+                <td class="image-cell" data-img-src="https://assets.adac.de/image/upload/ar_16:9,c_fill,f_auto,g_auto,q_auto:eco,w_600/v1/ADAC-eV/KOR/Bilder/PR/aprilia-shiver-900-2003_vtyu06">
+                    <a href="" target="_blank">
+                        <img src="" alt="Aprilia Shiver 900">
+                    </a>
+                </td>
+                <td>896</td>
+                <td>95</td>
+                <td>2020</td>
+                <td>218</td>
+                <td>15</td>
+                <td>11.199 €</td>
+                <td><a href="https://www.motorradonline.de/naked-bike/aprilia-shiver-900-50000-km-dauertest/" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Aprilia</td>
+                <td>Tuareg 660</td>
+                <td class="image-cell" data-img-src="https://images.piaggio.com/aprilia/vehicles/ap6136400ebs00/ap6136400ebs01/ap6136400ebs01-01-m.png">
+                    <a href="" target="_blank">
+                        <img src="" alt="Aprilia Tuareg 660">
+                    </a>
+                </td>
+                <td>659</td>
+                <td>80</td>
+                <td>2025</td>
+                <td>199</td>
+                <td>18</td>
+                <td>12.699 €</td>
+                <td><a href="https://www.aprilia.com/de_DE/modelle/tuareg/" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>BMW</td>
+                <td>F 900 GS</td>
+                <td class="image-cell" data-img-src="https://www.motorradcenter-darmstadt.de/wp-content/uploads/K1600_Screenshot-2023-09-13-115823.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="BMW F 900 GS">
+                    </a>
+                </td>
+                <td>895</td>
+                <td>105</td>
+                <td>2025</td>
+                <td>219</td>
+                <td>14.5</td>
+                <td>13.750 €</td>
+                <td><a href="https://www.bmw-motorrad.de/de/models/adventure/f900gs.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>BMW</td>
+                <td>F 900 XR</td>
+                <td class="image-cell" data-img-src="https://www.tourenfahrer.de/fileadmin/user_upload/bmw_f900xr_modell-2025_01.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="BMW F 900 XR">
+                    </a>
+                </td>
+                <td>895</td>
+                <td>105</td>
+                <td>2025</td>
+                <td>216</td>
+                <td>15.5</td>
+                <td>12.300 €</td>
+                <td><a href="https://www.bmw-motorrad.de/de/models/sport/f900xr.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>BMW</td>
+                <td>S 1000 XR</td>
+                <td class="image-cell" data-img-src="https://images5.1000ps.net/images_bikekat/2025/7-BMW/7882-S_1000_XR/003-638729858880501156-bmw-s-1000-xr.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="BMW S 1000 XR">
+                    </a>
+                </td>
+                <td>999</td>
+                <td>170</td>
+                <td>2025</td>
+                <td>227</td>
+                <td>20</td>
+                <td>19.480 €</td>
+                <td><a href="https://www.bmw-motorrad.de/de/models/sport/s1000xr/technicaldata.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>BMW</td>
+                <td>R 1300 GS</td>
+                <td class="image-cell" data-img-src="https://static.motorradundreisen.de/motorrad/8455/source.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="BMW R 1300 GS">
+                    </a>
+                </td>
+                <td>1300</td>
+                <td>145</td>
+                <td>2025</td>
+                <td>237</td>
+                <td>19</td>
+                <td>23.700 €</td>
+                <td><a href="https://www.bmw-motorrad.de/de/models/adventure/r1300gs/technicaldata.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>CFMOTO</td>
+                <td>800MT Explore</td>
+                <td class="image-cell" data-img-src="https://img2.storyblok.com/smart/f/176629/3000x2000/91b159f999/my2025_800mt-explore_gem-black_right.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="CFMOTO 800MT Explore">
+                    </a>
+                </td>
+                <td>799</td>
+                <td>91</td>
+                <td>2025</td>
+                <td>231</td>
+                <td>19</td>
+                <td>9.990 €</td>
+                <td><a href="https://cfmoto-motorcycle.eu/de/de/motorcycles/multi-function-touring/800mt-explore" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Honda</td>
+                <td>Africa Twin (CRF1100L Adventure Sports)</td>
+                <td class="image-cell" data-img-src="https://www.honda.de/content/dam/local/germany/motorcycles/2024/483898_Bold_new_graphics_and_colour_options_for_25YM_Honda_CRF1100L_Africa_Twin_1728x972.jpg/jcr:content/renditions/c2_r.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="Honda Africa Twin">
+                    </a>
+                </td>
+                <td>1084</td>
+                <td>102</td>
+                <td>2025</td>
+                <td>240</td>
+                <td>24.8</td>
+                <td>20.200 €</td>
+                <td><a href="https://www.honda.de/motorcycles/range/adventure/crf1100l-africa-twin-adventure-sports/specifications-and-price.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Honda</td>
+                <td>NC750X</td>
+                <td class="image-cell" data-img-src="https://motorrad.honda-duesseldorf.de/fileadmin/Modelle/NC750X__2025_/4-Vergleichsslider/Vergleichsslider-NC750X-25.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="Honda NC750X">
+                    </a>
+                </td>
+                <td>745</td>
+                <td>58.6</td>
+                <td>2025</td>
+                <td>216</td>
+                <td>14.1</td>
+                <td>7.900 €</td>
+                <td><a href="https://www.honda.de/motorcycles/range/adventure/nc750x/specifications.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Honda</td>
+                <td>NT1100</td>
+                <td class="image-cell" data-img-src="https://www.limbaecher.de/cdn/shop/files/Y00969_b2cd896-blau1.jpg?v=1745480721">
+                    <a href="" target="_blank">
+                        <img src="" alt="Honda NT1100">
+                    </a>
+                </td>
+                <td>1084</td>
+                <td>102</td>
+                <td>2025</td>
+                <td>240</td>
+                <td>20.4</td>
+                <td>14.600 €</td>
+                <td><a href="https://www.honda.de/motorcycles/range/touring/nt1100/specifications-and-price.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Honda</td>
+                <td>CB650R</td>
+                <td class="image-cell" data-img-src="https://www.honda.de/content/dam/central/motorcycles/colour-picker/street/cb650r/cb650r_stnd_2024/r-381c_candy_chromosphere_red/24YM_CB650R_Studio_CANDY_CHROMOSPHERE_RED_MT_RHS.png/_jcr_content/renditions/c2_r.png">
+                    <a href="" target="_blank">
+                        <img src="" alt="Honda CB650R">
+                    </a>
+                </td>
+                <td>649</td>
+                <td>95</td>
+                <td>2025</td>
+                <td>203</td>
+                <td>15.4</td>
+                <td>9.140 €</td>
+                <td><a href="https://www.honda.de/motorcycles/range/street/cb650r/overview.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Honda</td>
+                <td>Transalp (XL750)</td>
+                <td class="image-cell" data-img-src="https://motorrad.honda-frankfurt.de/fileadmin/Modelle/Transalp/2025/1Standardordner_Modelle/2-Preis_und_Farben/Transalp-Grey.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="Honda Transalp">
+                    </a>
+                </td>
+                <td>755</td>
+                <td>92</td>
+                <td>2025</td>
+                <td>210</td>
+                <td>16.9</td>
+                <td>10.500 €</td>
+                <td><a href="https://www.honda.de/motorcycles/range/adventure/xl750_transalp/specifications-and-price.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Kawasaki</td>
+                <td>Versys 650</td>
+                <td class="image-cell" data-img-src="https://www.kawasaki.de/content/dam/products/pim/studio/j/Resource_312358_25KLE650H_J_44SGY1DRF3CG_A.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="Kawasaki Versys 650">
+                    </a>
+                </td>
+                <td>649</td>
+                <td>67</td>
+                <td>2025</td>
+                <td>219</td>
+                <td>21</td>
+                <td>8.645 €</td>
+                <td><a href="https://www.kawasaki.de/de_de/Motorcycles/Adventure_Tourer/Versys650_2025.html" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Suzuki</td>
+                <td>V-Strom 800DE</td>
+                <td class="image-cell" data-img-src="https://suzukicycles.com/-/media/project/cycles/images/products/motorcycles/dl800de---v-strom-800de/2025/header/dl800dercm5_yvb_diagonal_2500x1227.jpg?mw=2560&w=2560&hash=74FEA93EC6CE5CF1681811502F0F2726">
+                    <a href="" target="_blank">
+                        <img src="" alt="Suzuki V-Strom 800DE">
+                    </a>
+                </td>
+                <td>776</td>
+                <td>84</td>
+                <td>2025</td>
+                <td>230</td>
+                <td>20</td>
+                <td>11.900 €</td>
+                <td><a href="https://motorrad.suzuki.de/modelle/adventure/v-strom-800de/details" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Suzuki</td>
+                <td>V-Strom 1050DE</td>
+                <td class="image-cell" data-img-src="https://suzukicycles.com/-/media/project/cycles/images/products/motorcycles/dl1050rj---v-strom-1050de/2025/dl1050rjm5_c4x_diagonal_2500x1227.jpg?mw=2560&w=2560&hash=169590D5D616D637934E98CA2FE85035">
+                    <a href="" target="_blank">
+                        <img src="" alt="Suzuki V-Strom 1050DE">
+                    </a>
+                </td>
+                <td>1037</td>
+                <td>106</td>
+                <td>2025</td>
+                <td>252</td>
+                <td>20</td>
+                <td>16.200 €</td>
+                <td><a href="https://motorrad.suzuki.de/modelle/adventure/v-strom-1050de/details" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Triumph</td>
+                <td>Trident 660</td>
+                <td class="image-cell" data-img-src="https://media.triumphmotorcycles.co.uk/image/upload/f_auto/q_auto:eco/sitecoremedialibrary/media-library/images/motorcycles/trident%20660%20-%202025/trident-660-my25-jetblack-rhs-629.png">
+                    <a href="" target="_blank">
+                        <img src="" alt="Triumph Trident 660">
+                    </a>
+                </td>
+                <td>660</td>
+                <td>81</td>
+                <td>2025</td>
+                <td>189</td>
+                <td>14</td>
+                <td>8.295 €</td>
+                <td><a href="https://www.triumphmotorcycles.de/motorraeder/roadster/trident-660" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Triumph</td>
+                <td>Tiger 900</td>
+                <td class="image-cell" data-img-src="https://images5.1000ps.net/images_bikekat/2025/37-Triumph/9977-Tiger_900_GT/001-638719281172967686-triumph-tiger-900-gt.jpg?width=650&height=400&mode=crop&format=webp">
+                    <a href="" target="_blank">
+                        <img src="" alt="Triumph Tiger 900">
+                    </a>
+                </td>
+                <td>888</td>
+                <td>108</td>
+                <td>2025</td>
+                <td>219</td>
+                <td>20</td>
+                <td>14.145 €</td>
+                <td><a href="https://www.triumphmotorcycles.de/motorraeder/adventure/tiger-900/specification" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Yamaha</td>
+                <td>MT-07</td>
+                <td class="image-cell" data-img-src="https://images5.1000ps.net/g-000317-g_W3172702_8-bild-638653883244171130.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="Yamaha MT-07">
+                    </a>
+                </td>
+                <td>689</td>
+                <td>73.4</td>
+                <td>2025</td>
+                <td>184</td>
+                <td>14</td>
+                <td>8.524 €</td>
+                <td><a href="https://www.yamaha-motor.eu/de/de/motorcycles/hyper-naked/pdp/mt-07-2025/" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Yamaha</td>
+                <td>MT-09</td>
+                <td class="image-cell" data-img-src="https://cdn2.yamaha-motor.eu/prod/product-assets/2025/MT09AS/2025-Yamaha-MT09AS-EU-Ice_Storm-360-Degrees-001-03_Mobile.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="Yamaha MT-09">
+                    </a>
+                </td>
+                <td>890</td>
+                <td>119</td>
+                <td>2025</td>
+                <td>193</td>
+                <td>14</td>
+                <td>11.449 €</td>
+                <td><a href="https://www.yamaha-motor.eu/de/de/motorcycles/hyper-naked/pdp/mt-09-2025/" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Yamaha</td>
+                <td>Tracer 7</td>
+                <td class="image-cell" data-img-src="https://cdn2.yamaha-motor.eu/prod/product-assets/2025/MT07TR/2025-Yamaha-MT07TR-EU-Redline-360-Degrees-001-03_Mobile.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="Yamaha Tracer 7">
+                    </a>
+                </td>
+                <td>689</td>
+                <td>73.4</td>
+                <td>2025</td>
+                <td>203</td>
+                <td>16</td>
+                <td>8.874 €</td>
+                <td><a href="https://www.yamaha-motor.eu/de/de/motorcycles/sport-touring/pdp/tracer-7-2025/" target="_blank">Link</a></td>
+            </tr>
+            <tr>
+                <td>Yamaha</td>
+                <td>Tracer 9</td>
+                <td class="image-cell" data-img-src="https://cdn2.yamaha-motor.eu/prod/product-assets/2025/MT09ATRS/2025-Yamaha-MT09ATRS-EU-Redline-360-Degrees-001-03_Mobile.jpg">
+                    <a href="" target="_blank">
+                        <img src="" alt="Yamaha Tracer 9">
+                    </a>
+                </td>
+                <td>890</td>
+                <td>119</td>
+                <td>2025</td>
+                <td>220</td>
+                <td>18.7</td>
+                <td>16.049 €</td>
+                <td><a href="https://www.yamaha-motor.eu/de/de/motorcycles/sport-touring/pdp/tracer-9-gt-2025/" target="_blank">Link</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Funktion zum Setzen der Bild-Links und Quellen aus data-img-src
+            document.querySelectorAll('td.image-cell').forEach(cell => {
+                const imgUrl = cell.getAttribute('data-img-src');
+                if (imgUrl) {
+                    const anchor = cell.querySelector('a');
+                    const img = cell.querySelector('img');
+                    if (anchor) anchor.href = imgUrl;
+                    if (img) img.src = imgUrl;
+                }
+            });
+
+            const getCellValue = (tr, idx, type) => {
+                let cellValue;
+                if (idx === 2) { // Special handling for the image cell if needed for sorting, though it's excluded
+                    cellValue = tr.children[idx].querySelector('img').alt || ''; // Use alt text for image cell
+                } else {
+                    cellValue = tr.children[idx].innerText || tr.children[idx].textContent;
+                }
+
+                if (type === 'number') {
+                    return parseFloat(cellValue);
+                } else if (type === 'currency') {
+                    // Remove currency symbol and thousands separators, replace comma with dot for proper float parsing
+                    return parseFloat(cellValue.replace(' €', '').replace(/\./g, '').replace(',', '.'));
+                } else if (type === 'text') {
+                    return cellValue.trim().toLowerCase();
+                }
+                return cellValue;
+            };
+
+            const comparer = (idx, asc, type) => (a, b) => {
+                const valA = getCellValue(a, idx, type);
+                const valB = getCellValue(b, idx, type);
+
+                if (typeof valA === 'number' && typeof valB === 'number') {
+                    return asc ? valA - valB : valB - valA;
+                } else {
+                    return asc ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+                }
+            };
+
+            document.querySelectorAll('th').forEach(th => {
+                // Exclude the 'Bild' column (index 2) from sorting
+                if (th.cellIndex === 2) {
+                    th.style.cursor = 'default'; // Change cursor back to default
+                    th.style.backgroundColor = '#f2f2f2'; // Remove hover effect
+                    th.onmouseover = null;
+                    th.onmouseout = null;
+                    return;
+                }
+
+                let sortDirection = 1; // 1 for ascending, -1 for descending
+                th.addEventListener('click', () => {
+                    const table = th.closest('table');
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const columnIndex = th.cellIndex;
+                    const columnType = th.getAttribute('data-column-type');
+
+                    rows.sort(comparer(columnIndex, sortDirection === 1, columnType));
+
+                    // Toggle sort direction for the next click
+                    sortDirection *= -1;
+
+                    // Remove existing rows and append sorted rows
+                    rows.forEach(row => tbody.appendChild(row));
+                });
+            });
+        });
+    </script>
+</body>
+</html>
