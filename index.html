@@ -67,9 +67,9 @@
     <button id="importBtn" style="width: 120px; padding: 6px 12px;">Importieren</button>
   </div>
   
-  <div>
-    <button id="resetBtn" style="width: 200px; padding: 6px 12px;">Alle Zeilen einblenden</button>
-  </div>
+<div style="display: flex; align-items: center; gap: 10px;">
+  <button id="resetBtn" style="width: 200px; padding: 6px 12px;">Alle Motorräder einblenden</button>
+  <span id="hiddenCount" style="font-size: 14px; color: #666;"></span>
 </div>
 
   <table>
@@ -104,6 +104,12 @@
 
     const getHiddenIDs = () =>
       JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+    const updateHiddenCount = () => {
+    const count = getHiddenIDs().length;
+    const el = document.getElementById('hiddenCount');
+    el.textContent = count > 0 ? `${count} Zeile(n) ausgeblendet` : 'Alle Zeilen sichtbar';
+    };
 
     const saveHiddenIDs = ids =>
       localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
@@ -179,6 +185,7 @@
               }
               saveHiddenIDs(updated);
               updateExportCodeField();
+              updateHiddenCount();
             });
           }
 
@@ -222,6 +229,7 @@
         }
       });
       updateExportCodeField();
+      updateHiddenCount();
       alert('Import abgeschlossen.');
     });
 
@@ -233,6 +241,7 @@
         if (cb) cb.checked = true;
       });
       updateExportCodeField();
+      updateHiddenCount();
     });
   });
   
@@ -282,7 +291,6 @@ const makeSortable = () => {
     });
   });
 };
-
   
 </script>
 
