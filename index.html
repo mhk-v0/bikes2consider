@@ -93,66 +93,82 @@
       <!-- Zeilen werden dynamisch geladen -->
     </tbody>
   </table>
-  
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const STORAGE_KEY = 'versteckteModelle';
     const VERSION_KEY = 'appVersion';
-    const CURRENT_VERSION = '1.0.2'; // Aktuelle Version
+    const CURRENT_VERSION = '1.0.2';
 
-    // Versionsprüfung und automatische Bereinigung
+    let MODEL_IDS = [];
+
+    const getHiddenIDs = () =>
+      JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+    const saveHiddenIDs = ids =>
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+
+    const bitsToBytes = bits => {
+      const padded = bits.padEnd(Math.ceil(bits.length / 8) * 8, '0');
+      const bytes = [];
+      for (let i = 0; i < padded.length; i += 8) {
+        bytes.push(parseInt(padded.slice(i, i + 8), 2));
+      }
+      return bytes;
+    };
+
+    const bytesToBits = bytes =>
+      bytes.map(b => b.toString(2).padStart(8, '0')).join('');
+
+    const updateExportCodeField = () => {
+      const hidden = getHiddenIDs();
+      const bits = MODEL_IDS.map(id => hidden.includes(id) ? '0' : '1').join('');
+      const byteArray = bitsToBytes(bits);
+      document.getElementById('exportCodeField').value =
+        btoa(String.fromCharCode(...byteArray));
+    };
+
+    const decodeImportCode = code => {
+      try {
+        const binaryString = atob(code);
+        const bytes = [...binaryString].map(c => c.charCodeAt(0));
+        let bits = bytesToBits(bytes).slice(0, MODEL_IDS.length);
+        return MODEL_IDS.filter((id, i) => bits[i] === '0');
+      } catch {
+        return null;
+      }
+    };
+
+    // Version prüfen
     const savedVersion = localStorage.getItem(VERSION_KEY);
-    if (!savedVersion || savedVersion !== CURRENT_VERSION) {
+    if (savedVersion !== CURRENT_VERSION) {
       localStorage.clear();
       localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
     }
 
-    function getHiddenIDs() {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    }
-
-    function saveHiddenIDs(ids) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-    }
-
-    function updateExportCodeField() {
-      const hidden = getHiddenIDs();
-      const exportField = document.getElementById('exportCodeField');
-      exportField.value = hidden.length ? btoa(JSON.stringify(hidden)) : '';
-    }
-
     fetch('bike_data.html')
-      .then(response => response.text())
+      .then(r => r.text())
       .then(data => {
         const tbody = document.getElementById('tabledaten');
         tbody.innerHTML = data;
 
-        const hiddenIDs = getHiddenIDs();
+        // Modelle mit data-id auslesen
+        const rows = Array.from(tbody.querySelectorAll('tr[data-id]'));
+        MODEL_IDS = rows.map(row => row.getAttribute('data-id')).sort();
 
-        // Bild-Links setzen
-        document.querySelectorAll('td.image-cell').forEach(cell => {
-          const imgUrl = cell.getAttribute('data-img-src');
-          const anchor = cell.querySelector('a');
-          const img = cell.querySelector('img');
-          if (imgUrl && anchor && img) {
-            anchor.href = imgUrl;
-            img.src = imgUrl;
-          }
-        });
+        const hidden = getHiddenIDs();
 
-        // Zeilen initialisieren
-        document.querySelectorAll('tbody tr').forEach(row => {
+        rows.forEach(row => {
           const id = row.getAttribute('data-id');
-          const checkbox = row.querySelector('.toggle-row');
-          if (!id) return;
+          const cb = row.querySelector('.toggle-row');
 
-          if (hiddenIDs.includes(id)) {
+          if (hidden.includes(id)) {
             row.style.display = 'none';
-            if (checkbox) checkbox.checked = false;
+            if (cb) cb.checked = false;
           }
 
-          if (checkbox) {
-            checkbox.addEventListener('change', function () {
+          if (cb) {
+            cb.addEventListener('change', function () {
               let updated = getHiddenIDs();
               if (!this.checked) {
                 row.style.display = 'none';
@@ -165,69 +181,38 @@
               updateExportCodeField();
             });
           }
+
+          // Bilder setzen
+          const imgUrl = row.querySelector('.image-cell')?.getAttribute('data-img-src');
+          const anchor = row.querySelector('.image-cell a');
+          const img = row.querySelector('.image-cell img');
+          if (anchor && imgUrl) anchor.href = imgUrl;
+          if (img && imgUrl) img.src = imgUrl;
         });
 
         updateExportCodeField();
       });
 
-    // Tabellen-Sortierung
-    const getCellValue = (tr, idx, type) => {
-      let val = tr.children[idx]?.innerText || '';
-      if (type === 'number') return parseFloat(val.replace('€', '').replace(/\./g, '').replace(',', '.'));
-      if (type === 'text') return val.trim().toLowerCase();
-      return val;
-    };
-
-    const comparer = (idx, asc, type) => (a, b) => {
-      const valA = getCellValue(a, idx, type);
-      const valB = getCellValue(b, idx, type);
-      if (typeof valA === 'number' && typeof valB === 'number') return asc ? valA - valB : valB - valA;
-      return asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-    };
-
-    document.querySelectorAll('th').forEach(th => {
-      if (th.cellIndex === 3) return; // Bildspalte nicht sortierbar
-      let sortDirection = 1;
-      th.addEventListener('click', () => {
-        const table = th.closest('table');
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        const columnIndex = th.cellIndex;
-        const columnType = th.getAttribute('data-column-type');
-        rows.sort(comparer(columnIndex, sortDirection === 1, columnType));
-        sortDirection *= -1;
-        rows.forEach(row => tbody.appendChild(row));
-      });
+    // Buttons
+    document.getElementById('copyExportBtn').addEventListener('click', () => {
+      const val = document.getElementById('exportCodeField').value;
+      if (!val) return alert('Kein Exportcode vorhanden.');
+      navigator.clipboard.writeText(val)
+        .then(() => alert('Exportcode kopiert!'))
+        .catch(() => alert('Kopieren fehlgeschlagen.'));
     });
 
-    // Reset
-    document.getElementById('resetBtn').addEventListener('click', function () {
-      localStorage.removeItem(STORAGE_KEY);
-      document.querySelectorAll('tbody tr').forEach(row => {
-        row.style.display = '';
-        const cb = row.querySelector('.toggle-row');
-        if (cb) cb.checked = true;
-      });
-      updateExportCodeField();
-    });
-
-    // Import
-    document.getElementById('importBtn').addEventListener('click', function () {
+    document.getElementById('importBtn').addEventListener('click', () => {
       const code = document.getElementById('importCode').value.trim();
       if (!code) return alert('Bitte Code eingeben.');
-      let imported;
-      try {
-        imported = JSON.parse(atob(code));
-      } catch (e) {
-        return alert('Ungültiger Code!');
-      }
-      if (!Array.isArray(imported)) return alert('Ungültige Daten!');
-      saveHiddenIDs(imported);
-      document.querySelectorAll('tbody tr').forEach(row => {
+      const hidden = decodeImportCode(code);
+      if (!hidden) return alert('Ungültiger Code.');
+
+      saveHiddenIDs(hidden);
+      document.querySelectorAll('tbody tr[data-id]').forEach(row => {
         const id = row.getAttribute('data-id');
         const cb = row.querySelector('.toggle-row');
-        if (!id) return;
-        if (imported.includes(id)) {
+        if (hidden.includes(id)) {
           row.style.display = 'none';
           if (cb) cb.checked = false;
         } else {
@@ -239,18 +224,14 @@
       alert('Import abgeschlossen.');
     });
 
-    // Kopieren
-    document.getElementById('copyExportBtn').addEventListener('click', () => {
-      const exportField = document.getElementById('exportCodeField');
-      if (!exportField.value) {
-        alert('Kein Exportcode zum Kopieren vorhanden.');
-        return;
-      }
-      navigator.clipboard.writeText(exportField.value).then(() => {
-        alert('Exportcode in Zwischenablage kopiert!');
-      }, () => {
-        alert('Fehler beim Kopieren.');
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      localStorage.removeItem(STORAGE_KEY);
+      document.querySelectorAll('tbody tr[data-id]').forEach(row => {
+        row.style.display = '';
+        const cb = row.querySelector('.toggle-row');
+        if (cb) cb.checked = true;
       });
+      updateExportCodeField();
     });
   });
 </script>
