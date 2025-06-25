@@ -247,23 +247,33 @@ const getCellValue = (tr, index, type) => {
 };
 
 const makeSortable = () => {
-  const ths = document.querySelectorAll('thead th[data-column-type]');
-  ths.forEach((th, index) => {
+  const allHeaders = document.querySelectorAll('thead th');
+  const sortableHeaders = Array.from(allHeaders).filter(th => th.hasAttribute('data-column-type'));
+
+  sortableHeaders.forEach(th => {
     let asc = true;
+
     th.addEventListener('click', () => {
-      const tbody = document.querySelector('#tabledaten');
       const type = th.getAttribute('data-column-type');
+      const columnIndex = Array.from(th.parentNode.children).indexOf(th);
+
+      const tbody = document.querySelector('#tabledaten');
       const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
+
       rows.sort((a, b) => {
-        const valA = getCellValue(a, index, type);
-        const valB = getCellValue(b, index, type);
-        return asc ? (valA > valB ? 1 : valA < valB ? -1 : 0) : (valA < valB ? 1 : valA > valB ? -1 : 0);
+        const valA = getCellValue(a, columnIndex, type);
+        const valB = getCellValue(b, columnIndex, type);
+        return asc
+          ? (valA > valB ? 1 : valA < valB ? -1 : 0)
+          : (valA < valB ? 1 : valA > valB ? -1 : 0);
       });
+
       asc = !asc;
       rows.forEach(row => tbody.appendChild(row));
     });
   });
 };
+
   
 </script>
 
