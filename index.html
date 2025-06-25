@@ -234,6 +234,41 @@
       updateExportCodeField();
     });
   });
+  
+    // Tabellen-Sortierung aktivieren
+    const getCellValue = (tr, index) =>
+      tr.children[index]?.textContent.trim();
+
+    const compare = (a, b, type) => {
+      if (type === 'number') {
+        return parseFloat(a) - parseFloat(b);
+      } else {
+        return a.localeCompare(b, 'de', { sensitivity: 'base' });
+      }
+    };
+
+    const makeSortable = () => {
+      const ths = document.querySelectorAll('thead th[data-column-type]');
+      ths.forEach((th, index) => {
+        let asc = true;
+        th.addEventListener('click', () => {
+          const tbody = document.querySelector('#tabledaten');
+          const type = th.getAttribute('data-column-type');
+          const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
+          rows.sort((a, b) => {
+            const valA = getCellValue(a, index);
+            const valB = getCellValue(b, index);
+            return asc ? compare(valA, valB, type) : compare(valB, valA, type);
+          });
+          asc = !asc;
+          // Angehängte Zeilen ersetzen
+          rows.forEach(row => tbody.appendChild(row));
+        });
+      });
+    };
+
+    makeSortable(); // Aufruf nach DOM-Load
+  
 </script>
 
 </body>
