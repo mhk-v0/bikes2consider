@@ -54,12 +54,22 @@
   <h2>Motorradtabelle</h2>
 
   <!-- Eingabe- und Steuerungselemente -->
-  <input type="text" id="exportCodeField" readonly style="margin:10px; width:300px; paddingt:5px;">
-  <button id="copyExportBtn" style="margin:10px; padding:6px 12px;">Kopieren</button>
-  <br>
-  <input id="importCode" placeholder="Import-Code hier einfügen" style="margin:10px; width:300px; padding:5px;" />
-  <button id="importBtn" style="margin:10px; padding:6px 12px;">Importieren</button>
-  <button id="resetBtn" style="margin:10px; padding:6px 12px;">Alle Zeilen einblenden</button>
+<div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin: 10px 0;">
+  <div>
+    <input type="text" id="exportCodeField" readonly style="width: 300px; padding: 5px;" />
+    <button id="copyExportBtn" style="padding: 6px 12px; margin-left: 10px;">Kopieren</button>
+  </div>
+  
+  <div>
+    <input id="importCode" placeholder="Import-Code hier einfügen" style="width: 300px; padding: 5px;" />
+  </div>
+  
+  <div>
+    <button id="importBtn" style="padding: 6px 12px; margin-right: 10px;">Importieren</button>
+    <button id="resetBtn" style="padding: 6px 12px;">Alle Zeilen einblenden</button>
+  </div>
+</div>
+
 
   <table>
     <thead>
