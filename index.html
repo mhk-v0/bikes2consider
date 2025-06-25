@@ -1,103 +1,111 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motorradtabelle</title>
-    <style>
-        /* Allgemeine Tabellenstile für bessere Lesbarkeit und Struktur */
-        table {
-            /* width: 100%; */ /* Diese Zeile entfernen oder auskommentieren */
-            border-collapse: collapse; /* Entfernt den Abstand zwischen den Zellen */
-            font-family: Arial, sans-serif;
-            table-layout: auto; /* NEU: Der Browser passt die Spaltenbreite an den Inhalt an */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motorradtabelle</title>
+<style>
+/* Allgemeine Tabellenstile für bessere Lesbarkeit und Struktur */
+table {
+/* width: 100%; */ /* Diese Zeile entfernen oder auskommentieren */
+border-collapse: collapse; /* Entfernt den Abstand zwischen den Zellen */
+font-family: Arial, sans-serif;
+table-layout: auto; /* NEU: Der Browser passt die Spaltenbreite an den Inhalt an */
+}
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            white-space: nowrap; /* NEU: Verhindert Zeilenumbrüche in Zellen, damit die Breite besser passt */
-        }
+th, td {
+border: 1px solid #ddd;
+padding: 8px;
+text-align: center;
+white-space: nowrap; /* NEU: Verhindert Zeilenumbrüche in Zellen, damit die Breite besser passt */
+}
 
-        th {
-            background-color: #f2f2f2;
-            cursor: pointer; /* Zeigt an, dass Spaltenüberschriften klickbar sind */
-        }
+th {
+background-color: #f2f2f2;
+cursor: pointer; /* Zeigt an, dass Spaltenüberschriften klickbar sind */
+}
 
-        th:hover {
-            background-color: #e0e0e0; /* Visueller Hinweis beim Überfahren mit der Maus */
-        }
+th:hover {
+background-color: #e0e0e0; /* Visueller Hinweis beim Überfahren mit der Maus */
+}
 
-        /* --- Hier ist der entscheidende Teil für das Bild --- */
-        td.image-cell {
-            padding: 6px;
-            height: 60px; /* Feste Höhe für die Bildzelle */
-            /* object-fit: scale-down; wurde hier entfernt, da es auf img angewendet wird */
-            overflow: hidden;
-            line-height: 0;
-            /* box-sizing: border-box; ist bei height für td wichtig, aber nicht direkt für Bildgröße */
-            /* Wenn die Zelle genau 60px hoch sein soll, hilft das `line-height: 0;` */
-        }
+/* --- Hier ist der entscheidende Teil für das Bild --- */
+td.image-cell {
+padding: 6px;
+height: 60px; /* Feste Höhe für die Bildzelle */
+/* object-fit: scale-down; wurde hier entfernt, da es auf img angewendet wird */
+overflow: hidden;
+line-height: 0;
+/* box-sizing: border-box; ist bei height für td wichtig, aber nicht direkt für Bildgröße */
+/* Wenn die Zelle genau 60px hoch sein soll, hilft das `line-height: 0;` */
+}
 
-        td.image-cell a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            /* object-fit: scale-down; wurde hier entfernt, da es auf img angewendet wird */
-            text-decoration: none;
-            color: inherit;
-        }
+td.image-cell a {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100%;
+/* object-fit: scale-down; wurde hier entfernt, da es auf img angewendet wird */
+text-decoration: none;
+color: inherit;
+}
 
-        td.image-cell img {
-            display: block;
-            max-width: 100%; /* Bild nimmt max. die Breite der Zelle ein */
-            max-height: 90px; /* Maximale Höhe des Bildes, wenn du sie steuern möchtest */
-            height: auto; /* Behält das Seitenverhältnis bei */
-            object-fit: scale-down; /* Passt das Bild an die Zellengröße an, ohne es zu beschneiden */
-            margin: 0 auto;
-            border: none;
-            padding: 0;
-        }
-
-    </style>
+td.image-cell img {
+display: block;
+max-width: 100%; /* Bild nimmt max. die Breite der Zelle ein */
+max-height: 90px; /* Maximale Höhe des Bildes, wenn du sie steuern möchtest */
+height: auto; /* Behält das Seitenverhältnis bei */
+object-fit: scale-down; /* Passt das Bild an die Zellengröße an, ohne es zu beschneiden */
+margin: 0 auto;
+border: none;
+padding: 0;
+}
+</style>
 </head>
+	
 <body>
-
-    <table>
-        <thead>
-            <tr>
-		<th style="text-align: center;">Sichtbar</th>
-                <th data-column-type="text">Hersteller</th>
-                <th data-column-type="text">Modell</th>
-                <th style="text-align: center;">Bild<br>(klick zum vergrößern)</th>
-                <th data-column-type="number" style="text-align: center;">Hubraum<br>(ccm)</th>
-                <th data-column-type="number" style="text-align: center;">Leistung<br>(PS)</th>
-                <th data-column-type="number">Baujahr</th>
-		<th data-column-type="number" style="text-align: center;">Leergewicht<br>voll in Kg</th>
-		<th data-column-type="number" style="text-align: center;">Tankinhalt<br>(Liter)</th>
-		<th data-column-type="number" style="text-align: center;">Preis<br>(UVP)</th>
-                <th data-column-type="text">Links</th>
-            </tr>
-        </thead>
+<table>	
+<thead>
+<tr>
+<th style="text-align: center;">Sichtbar</th>
+<th data-column-type="text">Hersteller</th>
+<th data-column-type="text">Modell</th>
+<th style="text-align: center;">Bild<br>(klick zum vergrößern)</th>
+<th data-column-type="number" style="text-align: center;">Hubraum<br>(ccm)</th>
+<th data-column-type="number" style="text-align: center;">Leistung<br>(PS)</th>
+<th data-column-type="number">Baujahr</th>
+<th data-column-type="number" style="text-align: center;">Leergewicht<br>voll in Kg</th>
+<th data-column-type="number" style="text-align: center;">Tankinhalt<br>(Liter)</th>
+<th data-column-type="number" style="text-align: center;">Preis<br>(UVP)</th>
+<th data-column-type="text">Links</th>
+</tr>
+</thead>
 	    
 <tbody id="tabledaten">
-</tbody>
-	    
-    </table>
+</tbody>    
+</table>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-        // 1. Lade Zeilen aus externer Datei und initialisiere danach alle Funktionen
+        const STORAGE_KEY = 'versteckteModelle';
+
+        function getHiddenModels() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        }
+
+        function saveHiddenModels(models) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(models));
+        }
+
+        // Lade Zeilen aus externer Datei und initialisiere danach alles
         fetch('bike_data.html')
             .then(response => response.text())
             .then(data => {
                 const tbody = document.getElementById('tabledaten');
                 tbody.innerHTML = data;
 
-                // 2. Setze Bild-Links aus data-img-src
+                // Bild-URLs setzen
                 document.querySelectorAll('td.image-cell').forEach(cell => {
                     const imgUrl = cell.getAttribute('data-img-src');
                     if (imgUrl) {
@@ -108,22 +116,41 @@
                     }
                 });
 
-                // 3. Checkbox-Funktionalität zum Ausblenden von Zeilen
-                document.querySelectorAll('.toggle-row').forEach((checkbox) => {
-                    checkbox.addEventListener('change', function () {
-                        const row = this.closest('tr');
-                        row.style.display = this.checked ? '' : 'none';
-                    });
+                const hiddenModels = getHiddenModels();
+
+                // Initiale Anwendung des gespeicherten Status
+                document.querySelectorAll('tbody tr').forEach(row => {
+                    const model = row.children[2]?.innerText.trim(); // Spalte "Modell"
+                    const checkbox = row.querySelector('.toggle-row');
+
+                    if (hiddenModels.includes(model)) {
+                        row.style.display = 'none';
+                        if (checkbox) checkbox.checked = false;
+                    }
+
+                    if (checkbox) {
+                        checkbox.addEventListener('change', function () {
+                            let updated = getHiddenModels();
+                            if (!this.checked) {
+                                row.style.display = 'none';
+                                if (!updated.includes(model)) updated.push(model);
+                            } else {
+                                row.style.display = '';
+                                updated = updated.filter(m => m !== model);
+                            }
+                            saveHiddenModels(updated);
+                        });
+                    }
                 });
             });
 
-        // 4. Sortierfunktion für Spalten
+        // Sortierfunktion für Spalten
         const getCellValue = (tr, idx, type) => {
             let cellValue;
-            if (idx === 3) { // Index 3 = Bildspalte nach neuer erster Spalte
-                cellValue = tr.children[idx].querySelector('img').alt || '';
+            if (idx === 3) {
+                cellValue = tr.children[idx].querySelector('img')?.alt || '';
             } else {
-                cellValue = tr.children[idx].innerText || tr.children[idx].textContent;
+                cellValue = tr.children[idx]?.innerText || tr.children[idx]?.textContent || '';
             }
 
             if (type === 'number') {
@@ -148,12 +175,9 @@
         };
 
         document.querySelectorAll('th').forEach(th => {
-            // Bildspalte ausschließen (neu: Index 3 durch neue Sichtbarkeits-Spalte vorn)
             if (th.cellIndex === 3) {
                 th.style.cursor = 'default';
                 th.style.backgroundColor = '#f2f2f2';
-                th.onmouseover = null;
-                th.onmouseout = null;
                 return;
             }
 
@@ -171,21 +195,24 @@
             });
         });
 
-        // 5. Button zum Zurücksetzen aller Zeilen (wird oberhalb der Tabelle eingefügt)
+        // Reset-Button einfügen
         const resetButton = document.createElement('button');
         resetButton.textContent = 'Alle Zeilen einblenden';
         resetButton.style.margin = '10px';
+        resetButton.style.padding = '6px 12px';
+        resetButton.style.cursor = 'pointer';
         document.body.insertBefore(resetButton, document.querySelector('table'));
 
         resetButton.addEventListener('click', function () {
-            document.querySelectorAll('.toggle-row').forEach(cb => {
-                cb.checked = true;
-                cb.closest('tr').style.display = '';
+            localStorage.removeItem(STORAGE_KEY); // Speicher löschen
+            document.querySelectorAll('tbody tr').forEach(row => {
+                row.style.display = '';
+                const cb = row.querySelector('.toggle-row');
+                if (cb) cb.checked = true;
             });
         });
     });
 </script>
 
-	
 </body>
 </html>
