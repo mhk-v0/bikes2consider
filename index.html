@@ -91,7 +91,7 @@
     document.addEventListener('DOMContentLoaded', function () {
 
         // 1. Lade Zeilen aus externer Datei und initialisiere danach alle Funktionen
-        fetch('motorrad-daten.html')
+        fetch('bike_data.html')
             .then(response => response.text())
             .then(data => {
                 const tbody = document.getElementById('tabledaten');
