@@ -237,36 +237,33 @@
   });
   
     // Tabellen-Sortierung aktivieren
-    const getCellValue = (tr, index) =>
-      tr.children[index]?.textContent.trim();
+const getCellValue = (tr, index, type) => {
+  const raw = tr.children[index]?.textContent.trim() || '';
+  if (type === 'number') {
+    const num = raw.replace(/[^\d,.-]/g, '').replace(',', '.'); // Komma zu Punkt
+    return parseFloat(num) || 0;
+  }
+  return raw.toLowerCase(); // Für Text sortieren, klein schreiben für stabile Sortierung
+};
 
-    const compare = (a, b, type) => {
-      if (type === 'number') {
-        return parseFloat(a) - parseFloat(b);
-      } else {
-        return a.localeCompare(b, 'de', { sensitivity: 'base' });
-      }
-    };
-
-    const makeSortable = () => {
-      const ths = document.querySelectorAll('thead th[data-column-type]');
-      ths.forEach((th, index) => {
-        let asc = true;
-        th.addEventListener('click', () => {
-          const tbody = document.querySelector('#tabledaten');
-          const type = th.getAttribute('data-column-type');
-          const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
-          rows.sort((a, b) => {
-            const valA = getCellValue(a, index);
-            const valB = getCellValue(b, index);
-            return asc ? compare(valA, valB, type) : compare(valB, valA, type);
-          });
-          asc = !asc;
-          // Angehängte Zeilen ersetzen
-          rows.forEach(row => tbody.appendChild(row));
-        });
+const makeSortable = () => {
+  const ths = document.querySelectorAll('thead th[data-column-type]');
+  ths.forEach((th, index) => {
+    let asc = true;
+    th.addEventListener('click', () => {
+      const tbody = document.querySelector('#tabledaten');
+      const type = th.getAttribute('data-column-type');
+      const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
+      rows.sort((a, b) => {
+        const valA = getCellValue(a, index, type);
+        const valB = getCellValue(b, index, type);
+        return asc ? (valA > valB ? 1 : valA < valB ? -1 : 0) : (valA < valB ? 1 : valA > valB ? -1 : 0);
       });
-    };
+      asc = !asc;
+      rows.forEach(row => tbody.appendChild(row));
+    });
+  });
+};
   
 </script>
 
