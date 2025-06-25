@@ -239,11 +239,20 @@
     // Tabellen-Sortierung aktivieren
 const getCellValue = (tr, index, type) => {
   const raw = tr.children[index]?.textContent.trim() || '';
+
   if (type === 'number') {
-    const num = raw.replace(/[^\d,.-]/g, '').replace(',', '.'); // Komma zu Punkt
+    const num = raw.replace(/[^\d,.-]/g, '').replace(',', '.');
     return parseFloat(num) || 0;
   }
-  return raw.toLowerCase(); // Für Text sortieren, klein schreiben für stabile Sortierung
+
+  if (type === 'text') {
+    // Wenn die Zelle mit einer Zahl beginnt (z. B. "95 @ 8750"), diese Zahl extrahieren
+    const numMatch = raw.match(/^(\d+(?:[.,]\d+)?)/);
+    if (numMatch) return parseFloat(numMatch[1].replace(',', '.'));
+    return raw.toLowerCase(); // Falls keine Zahl vorne steht
+  }
+
+  return raw.toLowerCase();
 };
 
 const makeSortable = () => {
