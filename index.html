@@ -244,37 +244,53 @@
     });
   });
 
-  const getCellValue = (tr, index, type) => {
-    const raw = tr.children[index]?.textContent.trim() || '';
-    if (type === 'number') {
-      const num = raw.replace(/[^\d,.-]/g, '').replace(',', '.');
-      return parseFloat(num) || 0;
-    }
-    if (type === 'text' && /^[\d\s]*@/.test(raw)) {
-      const match = raw.match(/^(\d+)\s*@/);
-      return match ? parseInt(match[1]) : raw.toLowerCase();
-    }
-    return raw.toLowerCase();
-  };
+const getCellValue = (tr, index, type) => {
+  const raw = tr.children[index]?.textContent.trim() || '';
 
-  const makeSortable = () => {
-    const ths = document.querySelectorAll('thead th[data-column-type]');
-    ths.forEach((th, index) => {
-      let asc = true;
-      th.addEventListener('click', () => {
-        const tbody = document.querySelector('#tabledaten');
-        const type = th.getAttribute('data-column-type');
-        const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
-        rows.sort((a, b) => {
-          const valA = getCellValue(a, index, type);
-          const valB = getCellValue(b, index, type);
-          return asc ? (valA > valB ? 1 : valA < valB ? -1 : 0) : (valA < valB ? 1 : valA > valB ? -1 : 0);
-        });
-        asc = !asc;
-        rows.forEach(row => tbody.appendChild(row));
+  if (type === 'number') {
+    const num = raw.replace(/[^\d,.-]/g, '').replace(',', '.');
+    return parseFloat(num) || 0;
+  }
+
+  if (type === 'text') {
+    // Wenn die Zelle mit einer Zahl beginnt (z. B. "95 @ 8750"), diese Zahl extrahieren
+    const numMatch = raw.match(/^(\d+(?:[.,]\d+)?)/);
+    if (numMatch) return parseFloat(numMatch[1].replace(',', '.'));
+    return raw.toLowerCase(); // Falls keine Zahl vorne steht
+  }
+
+  return raw.toLowerCase();
+};
+
+const makeSortable = () => {
+  const allHeaders = document.querySelectorAll('thead th');
+  const sortableHeaders = Array.from(allHeaders).filter(th => th.hasAttribute('data-column-type'));
+
+  sortableHeaders.forEach(th => {
+    let asc = true;
+
+    th.addEventListener('click', () => {
+      const type = th.getAttribute('data-column-type');
+      const columnIndex = Array.from(th.parentNode.children).indexOf(th);
+
+      const tbody = document.querySelector('#tabledaten');
+      const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
+
+      rows.sort((a, b) => {
+        const valA = getCellValue(a, columnIndex, type);
+        const valB = getCellValue(b, columnIndex, type);
+        return asc
+          ? (valA > valB ? 1 : valA < valB ? -1 : 0)
+          : (valA < valB ? 1 : valA > valB ? -1 : 0);
       });
+
+      asc = !asc;
+      rows.forEach(row => tbody.appendChild(row));
     });
-  };
+  });
+};
+
+    
 </script>
 
 </body>
