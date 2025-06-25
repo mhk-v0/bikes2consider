@@ -81,139 +81,150 @@
     </tbody>
   </table>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const STORAGE_KEY = 'versteckteModelle';
+<script>
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    const CURRENT_VERSION = '1.0.0'; // Versionsnummer hier anpassen
+    const STORAGE_KEY = 'versteckteModelle';
+    const VERSION_KEY = 'app_version';
 
-      function getHiddenModels() {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      }
+    // Versionsprüfung & automatische Bereinigung
+    const savedVersion = localStorage.getItem(VERSION_KEY);
+    if (!savedVersion || savedVersion !== CURRENT_VERSION) {
+      localStorage.clear();
+      localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
+      console.log('localStorage wurde bereinigt wegen Versionswechsel oder erstmaliger Nutzung.');
+    }
 
-      function saveHiddenModels(models) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(models));
-      }
+    function getHiddenModels() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    }
 
-      fetch('bike_data.html')
-        .then(response => response.text())
-        .then(data => {
-          const tbody = document.getElementById('tabledaten');
-          tbody.innerHTML = data;
+    function saveHiddenModels(models) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(models));
+    }
 
-          // Bilder und Sichtbarkeit initialisieren
-          const hiddenModels = getHiddenModels();
-          document.querySelectorAll('td.image-cell').forEach(cell => {
-            const imgUrl = cell.getAttribute('data-img-src');
-            if (imgUrl) {
-              const anchor = cell.querySelector('a');
-              const img = cell.querySelector('img');
-              if (anchor) anchor.href = imgUrl;
-              if (img) img.src = imgUrl;
-            }
-          });
+    fetch('bike_data.html')
+      .then(response => response.text())
+      .then(data => {
+        const tbody = document.getElementById('tabledaten');
+        tbody.innerHTML = data;
 
-          document.querySelectorAll('tbody tr').forEach(row => {
-            const model = row.children[2]?.innerText.trim();
-            const checkbox = row.querySelector('.toggle-row');
-
-            if (hiddenModels.includes(model)) {
-              row.style.display = 'none';
-              if (checkbox) checkbox.checked = false;
-            }
-
-            if (checkbox) {
-              checkbox.addEventListener('change', function () {
-                let updated = getHiddenModels();
-                if (!this.checked) {
-                  row.style.display = 'none';
-                  if (!updated.includes(model)) updated.push(model);
-                } else {
-                  row.style.display = '';
-                  updated = updated.filter(m => m !== model);
-                }
-                saveHiddenModels(updated);
-              });
-            }
-          });
-        });
-
-      // Sortierung
-      const getCellValue = (tr, idx, type) => {
-        let val = tr.children[idx]?.innerText || '';
-        if (type === 'number') return parseFloat(val.replace('€', '').replace(/\./g, '').replace(',', '.'));
-        if (type === 'text') return val.trim().toLowerCase();
-        return val;
-      };
-
-      const comparer = (idx, asc, type) => (a, b) => {
-        const valA = getCellValue(a, idx, type);
-        const valB = getCellValue(b, idx, type);
-        if (typeof valA === 'number' && typeof valB === 'number') return asc ? valA - valB : valB - valA;
-        return asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-      };
-
-      document.querySelectorAll('th').forEach(th => {
-        if (th.cellIndex === 3) return; // Bildspalte nicht sortierbar
-        let sortDirection = 1;
-        th.addEventListener('click', () => {
-          const table = th.closest('table');
-          const tbody = table.querySelector('tbody');
-          const rows = Array.from(tbody.querySelectorAll('tr'));
-          const columnIndex = th.cellIndex;
-          const columnType = th.getAttribute('data-column-type');
-          rows.sort(comparer(columnIndex, sortDirection === 1, columnType));
-          sortDirection *= -1;
-          rows.forEach(row => tbody.appendChild(row));
-        });
-      });
-
-      // Reset-Button
-      document.getElementById('resetBtn').addEventListener('click', function () {
-        localStorage.removeItem(STORAGE_KEY);
-        document.querySelectorAll('tbody tr').forEach(row => {
-          row.style.display = '';
-          const cb = row.querySelector('.toggle-row');
-          if (cb) cb.checked = true;
-        });
-      });
-
-      // Export-Button
-      document.getElementById('exportBtn').addEventListener('click', function () {
-        const hidden = getHiddenModels();
-        if (hidden.length === 0) {
-          alert('Keine ausgeblendeten Modelle vorhanden.');
-          return;
-        }
-        const code = btoa(JSON.stringify(hidden));
-        prompt('Teile diesen Code mit anderen:', code);
-      });
-
-      // Import-Button
-      document.getElementById('importBtn').addEventListener('click', function () {
-        const code = document.getElementById('importCode').value.trim();
-        if (!code) return alert('Bitte Code eingeben.');
-        let imported;
-        try {
-          imported = JSON.parse(atob(code));
-        } catch (e) {
-          return alert('Ungültiger Code!');
-        }
-        if (!Array.isArray(imported)) return alert('Ungültige Daten!');
-        saveHiddenModels(imported);
-        document.querySelectorAll('tbody tr').forEach(row => {
-          const model = row.children[2]?.innerText.trim();
-          const cb = row.querySelector('.toggle-row');
-          if (imported.includes(model)) {
-            row.style.display = 'none';
-            if (cb) cb.checked = false;
-          } else {
-            row.style.display = '';
-            if (cb) cb.checked = true;
+        // Bilder und Sichtbarkeit initialisieren
+        const hiddenModels = getHiddenModels();
+        document.querySelectorAll('td.image-cell').forEach(cell => {
+          const imgUrl = cell.getAttribute('data-img-src');
+          if (imgUrl) {
+            const anchor = cell.querySelector('a');
+            const img = cell.querySelector('img');
+            if (anchor) anchor.href = imgUrl;
+            if (img) img.src = imgUrl;
           }
         });
-        alert('Import abgeschlossen.');
+
+        document.querySelectorAll('tbody tr').forEach(row => {
+          const model = row.children[2]?.innerText.trim();
+          const checkbox = row.querySelector('.toggle-row');
+
+          if (hiddenModels.includes(model)) {
+            row.style.display = 'none';
+            if (checkbox) checkbox.checked = false;
+          }
+
+          if (checkbox) {
+            checkbox.addEventListener('change', function () {
+              let updated = getHiddenModels();
+              if (!this.checked) {
+                row.style.display = 'none';
+                if (!updated.includes(model)) updated.push(model);
+              } else {
+                row.style.display = '';
+                updated = updated.filter(m => m !== model);
+              }
+              saveHiddenModels(updated);
+            });
+          }
+        });
+      });
+
+    // Sortierung
+    const getCellValue = (tr, idx, type) => {
+      let val = tr.children[idx]?.innerText || '';
+      if (type === 'number') return parseFloat(val.replace('€', '').replace(/\./g, '').replace(',', '.'));
+      if (type === 'text') return val.trim().toLowerCase();
+      return val;
+    };
+
+    const comparer = (idx, asc, type) => (a, b) => {
+      const valA = getCellValue(a, idx, type);
+      const valB = getCellValue(b, idx, type);
+      if (typeof valA === 'number' && typeof valB === 'number') return asc ? valA - valB : valB - valA;
+      return asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    };
+
+    document.querySelectorAll('th').forEach(th => {
+      if (th.cellIndex === 3) return; // Bildspalte nicht sortierbar
+      let sortDirection = 1;
+      th.addEventListener('click', () => {
+        const table = th.closest('table');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const columnIndex = th.cellIndex;
+        const columnType = th.getAttribute('data-column-type');
+        rows.sort(comparer(columnIndex, sortDirection === 1, columnType));
+        sortDirection *= -1;
+        rows.forEach(row => tbody.appendChild(row));
       });
     });
-  </script>
+
+    // Reset-Button
+    document.getElementById('resetBtn').addEventListener('click', function () {
+      localStorage.removeItem(STORAGE_KEY);
+      document.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = '';
+        const cb = row.querySelector('.toggle-row');
+        if (cb) cb.checked = true;
+      });
+    });
+
+    // Export-Button
+    document.getElementById('exportBtn').addEventListener('click', function () {
+      const hidden = getHiddenModels();
+      if (hidden.length === 0) {
+        alert('Keine ausgeblendeten Modelle vorhanden.');
+        return;
+      }
+      const code = btoa(JSON.stringify(hidden));
+      prompt('Teile diesen Code mit anderen:', code);
+    });
+
+    // Import-Button
+    document.getElementById('importBtn').addEventListener('click', function () {
+      const code = document.getElementById('importCode').value.trim();
+      if (!code) return alert('Bitte Code eingeben.');
+      let imported;
+      try {
+        imported = JSON.parse(atob(code));
+      } catch (e) {
+        return alert('Ungültiger Code!');
+      }
+      if (!Array.isArray(imported)) return alert('Ungültige Daten!');
+      saveHiddenModels(imported);
+      document.querySelectorAll('tbody tr').forEach(row => {
+        const model = row.children[2]?.innerText.trim();
+        const cb = row.querySelector('.toggle-row');
+        if (imported.includes(model)) {
+          row.style.display = 'none';
+          if (cb) cb.checked = false;
+        } else {
+          row.style.display = '';
+          if (cb) cb.checked = true;
+        }
+      });
+      alert('Import abgeschlossen.');
+    });
+  });
+</script>
 
 </body>
 </html>
