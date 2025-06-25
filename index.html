@@ -93,12 +93,12 @@
       <!-- Zeilen werden dynamisch geladen -->
     </tbody>
   </table>
-
+  
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const STORAGE_KEY = 'versteckteModelle';
     const VERSION_KEY = 'appVersion';
-    const CURRENT_VERSION = '1.0.1'; // Hier die aktuelle Versionsnummer eintragen
+    const CURRENT_VERSION = '1.0.2'; // Aktuelle Version
 
     // Versionsprüfung und automatische Bereinigung
     const savedVersion = localStorage.getItem(VERSION_KEY);
@@ -107,22 +107,18 @@
       localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
     }
 
-    function getHiddenModels() {
+    function getHiddenIDs() {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     }
 
-    function saveHiddenModels(models) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(models));
+    function saveHiddenIDs(ids) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
     }
 
     function updateExportCodeField() {
-      const hidden = getHiddenModels();
+      const hidden = getHiddenIDs();
       const exportField = document.getElementById('exportCodeField');
-      if (hidden.length === 0) {
-        exportField.value = '';
-      } else {
-        exportField.value = btoa(JSON.stringify(hidden));
-      }
+      exportField.value = hidden.length ? btoa(JSON.stringify(hidden)) : '';
     }
 
     fetch('bike_data.html')
@@ -131,38 +127,41 @@
         const tbody = document.getElementById('tabledaten');
         tbody.innerHTML = data;
 
-        // Bilder und Sichtbarkeit initialisieren
-        const hiddenModels = getHiddenModels();
+        const hiddenIDs = getHiddenIDs();
+
+        // Bild-Links setzen
         document.querySelectorAll('td.image-cell').forEach(cell => {
           const imgUrl = cell.getAttribute('data-img-src');
-          if (imgUrl) {
-            const anchor = cell.querySelector('a');
-            const img = cell.querySelector('img');
-            if (anchor) anchor.href = imgUrl;
-            if (img) img.src = imgUrl;
+          const anchor = cell.querySelector('a');
+          const img = cell.querySelector('img');
+          if (imgUrl && anchor && img) {
+            anchor.href = imgUrl;
+            img.src = imgUrl;
           }
         });
 
+        // Zeilen initialisieren
         document.querySelectorAll('tbody tr').forEach(row => {
-          const model = row.children[2]?.innerText.trim();
+          const id = row.getAttribute('data-id');
           const checkbox = row.querySelector('.toggle-row');
+          if (!id) return;
 
-          if (hiddenModels.includes(model)) {
+          if (hiddenIDs.includes(id)) {
             row.style.display = 'none';
             if (checkbox) checkbox.checked = false;
           }
 
           if (checkbox) {
             checkbox.addEventListener('change', function () {
-              let updated = getHiddenModels();
+              let updated = getHiddenIDs();
               if (!this.checked) {
                 row.style.display = 'none';
-                if (!updated.includes(model)) updated.push(model);
+                if (!updated.includes(id)) updated.push(id);
               } else {
                 row.style.display = '';
-                updated = updated.filter(m => m !== model);
+                updated = updated.filter(x => x !== id);
               }
-              saveHiddenModels(updated);
+              saveHiddenIDs(updated);
               updateExportCodeField();
             });
           }
@@ -171,7 +170,7 @@
         updateExportCodeField();
       });
 
-    // Sortierung
+    // Tabellen-Sortierung
     const getCellValue = (tr, idx, type) => {
       let val = tr.children[idx]?.innerText || '';
       if (type === 'number') return parseFloat(val.replace('€', '').replace(/\./g, '').replace(',', '.'));
@@ -201,7 +200,7 @@
       });
     });
 
-    // Reset-Button
+    // Reset
     document.getElementById('resetBtn').addEventListener('click', function () {
       localStorage.removeItem(STORAGE_KEY);
       document.querySelectorAll('tbody tr').forEach(row => {
@@ -212,7 +211,7 @@
       updateExportCodeField();
     });
 
-    // Import-Button
+    // Import
     document.getElementById('importBtn').addEventListener('click', function () {
       const code = document.getElementById('importCode').value.trim();
       if (!code) return alert('Bitte Code eingeben.');
@@ -223,11 +222,12 @@
         return alert('Ungültiger Code!');
       }
       if (!Array.isArray(imported)) return alert('Ungültige Daten!');
-      saveHiddenModels(imported);
+      saveHiddenIDs(imported);
       document.querySelectorAll('tbody tr').forEach(row => {
-        const model = row.children[2]?.innerText.trim();
+        const id = row.getAttribute('data-id');
         const cb = row.querySelector('.toggle-row');
-        if (imported.includes(model)) {
+        if (!id) return;
+        if (imported.includes(id)) {
           row.style.display = 'none';
           if (cb) cb.checked = false;
         } else {
@@ -239,7 +239,7 @@
       alert('Import abgeschlossen.');
     });
 
-    // Kopieren Button
+    // Kopieren
     document.getElementById('copyExportBtn').addEventListener('click', () => {
       const exportField = document.getElementById('exportCodeField');
       if (!exportField.value) {
@@ -254,7 +254,6 @@
     });
   });
 </script>
-
 
 </body>
 </html>
